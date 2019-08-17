@@ -12,13 +12,17 @@ sentences=[
         'I love my dog',
         'I love my cat!'
 ]
-# create an instance of tokenizer, with a passive parameter num_words=100, way too big in this case, since there are only 5 distinct word in sentences
+# create an instance of tokenizer, with a passive parameter num_words=100, way # too big in this case, since there are only 5 distinct word in sentences
 
-# What tokenizer will do is take the top/most common 100 words by volume and just encode those
+# What tokenizer will do is take the top/most common 100 words by volume and 
+# just encode those
 
-# The tokenizer provides a word index property which returns a dictionary containing [key,value] pairs, where the key is the word, and the value is the token for that word
+# The tokenizer provides a word index property which returns a dictionary 
+# containing [key,value] pairs, where the key is the word, and the value is 
+# the token for that word
 
-# <OOV> The idea here is that I'm going to create a new token, a special token that I'm going to use for words that aren't recognized, that aren't in the word index itself.
+# <OOV> The idea here is that I'm going to create a new token, a special token # that I'm going to use for words that aren't recognized, that aren't in the 
+# word index itself.
 tokenizer = Tokenizer(num_words=100, oov_token="<OOV>")
 tokenizer.fit_on_texts(sentences)
 word_index = tokenizer.word_index
@@ -27,7 +31,8 @@ print(word_index) #{'i':1, 'my':3, 'dog':4, 'cat':5, 'love':2}
 ## Encoding texts to <word, token> pairs
  
 ```python
-# It will go through the entire body of text and it will create a dictionary with the key being the word and the value being the token for that word.
+# It will go through the entire body of text and it will create a dictionary 
+# with the key being the word and the value being the token for that word.
 tokenizer.fit_on_texts(sentences)
 ```
 
