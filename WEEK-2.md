@@ -112,7 +112,14 @@ model.summary()
 # ___________________________
 ```
 ### Output Embedding Metadata
-So now let's take a look at what we'll do to view this in the embedding projector. So first of all, I'm going to take the output of my embedding, which was modeled out layer zero, and we can see that there were 10,000 possible words and I had 16 dimensions. Here is where I'm going to iterate through that array to pull out the 16 dimensions, the values for the 16 dimensions per word and write that as out_V, which is my vectors.tsv. Then the actual word associated with that will be written to out_M, which is my meta.tsv. So if I run that, it we'll do its trick and if you're running in Colab this piece of code, will then allow me to just download those files. So it'll take a moment and they'll get downloaded. There they are, vecs.tsv and meta.tsv. So if I now come over to the embedding projector, we see its showing right now the Word2Vec 10K. So if I scroll down here and say load data, I'll choose file, I'll take the vecs.tsv. I'll choose file. I'll take the meta.tsv, then load. I click outside and now I see this. But if I spherize the data, you can see it's clustered like this. We do need to improve it a little bit but we can begin to see that the words have been clustered in both the positive and negative. So for example if I search for the word boring, we can see like the nearest neighbors for boring are things like stink or unlikeable, prom, unrealistic wooden, devoid, unwatchable, and proverbial. So if come over here we can see. These are bad words. These are words showing a negative looking review.
+Quote from Laurence
+
+> So now let's take a look at what we'll do to view this in the embedding projector. So first of all, I'm going to take the output of my embedding, which was modeled out `layer zero`, and we can see that there were `10,000 possible words and I had 16 dimensions`. 
+> 
+> Here is where I'm going to iterate through that array to pull out the 16 dimensions, the values for the 16 dimensions per word and write that as out_V, which is my vectors.tsv. 
+> 
+> Then the actual word associated with that will be written to out_M, which is my meta.tsv. So if I run that, it we'll do its trick and if you're running in Colab this piece of code, will then allow me to just download those files. So it'll take a moment and they'll get downloaded. There they are, vecs.tsv and meta.tsv. So if I now come over to the embedding projector, we see its showing right now the `Word2Vec 10K`. So if I scroll down here and say `load data`, I'll choose file, I'll take the vecs.tsv. I'll choose file. I'll take the meta.tsv, then load. I click outside and now I see this. But if I `spherize` the data, you can see it's clustered like this. We do need to improve it a little bit but we can begin to see that the `words have been clustered in both the positive and negative`. So for example if I search for the word boring, we can see like the nearest neighbors for boring are things like stink or unlikeable, prom, unrealistic wooden, devoid, unwatchable, and proverbial. So if come over here we can see. These are bad words. These are words showing a negative looking review.
+ 
 ```python
 import io
 
@@ -120,8 +127,8 @@ out_v = io.open('vecs.tsv', 'w', encoding='utf-8')
 out_m = io.open('meta.tsv', 'w', encoding='utf-8')
 for word_num in range(1, vocab_size):
   word = reverse_word_index[word_num]
-  embeddings = weights[word_num]
   out_m.write(word + "\n")
+  embeddings = weights[word_num]
   out_v.write('\t'.join([str(x) for x in embeddings]) + "\n")
 out_v.close()
 out_m.close()
