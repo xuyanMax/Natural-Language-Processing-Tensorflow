@@ -140,4 +140,42 @@ out_m.close()
 ```python
 num_epochs = 10
 model.fit(padded, training_labels_final, epochs=num_epochs, validation_data=(testing_padded, testing_labels_final))
+
+
+# Train on 25000 samples, validate on 25000 samples
+# W0818 16:52:47.867466 140151655249792 deprecation.py:323] From /usr/local/lib/python3.6/dist-packages/tensorflow/python/ops/math_grad.py:1250: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+# Instructions for updating:
+# Use tf.where in 2.0, which has the same broadcast rule as np.where
+# Epoch 1/10
+# 25000/25000 [==============================] - 7s 265us/sample - loss: 0.4924 - acc: 0.7470 - val_loss: 0.3469 - val_acc: 0.8466
+# Epoch 2/10
+# 25000/25000 [==============================] - 5s 208us/sample - loss: 0.2520 - acc: 0.9000 - val_loss: 0.3575 - val_acc: 0.8471
+# Epoch 3/10
+# 25000/25000 [==============================] - 5s 208us/sample - loss: 0.1257 - acc: 0.9622 - val_loss: 0.4358 - val_acc: 0.8276
+# Epoch 4/10
+# 25000/25000 [==============================] - 5s 206us/sample - loss: 0.0370 - acc: 0.9941 - val_loss: 0.5166 - val_acc: 0.8275
+# Epoch 5/10
+# 25000/25000 [==============================] - 5s 207us/sample - loss: 0.0096 - acc: 0.9990 - val_loss: 0.5792 - val_acc: 0.8275
+# Epoch 6/10
+# 25000/25000 [==============================] - 5s 206us/sample - loss: 0.0024 - acc: 1.0000 - val_loss: 0.6370 - val_acc: 0.8276
+# Epoch 7/10
+# 25000/25000 [==============================] - 5s 208us/sample - loss: 0.0011 - acc: 1.0000 - val_loss: 0.6824 - val_acc: 0.8295
+# Epoch 8/10
+# 25000/25000 [==============================] - 5s 210us/sample - loss: 5.6307e-04 - acc: 1.0000 - val_loss: 0.7246 - val_acc: 0.8298
+# Epoch 9/10
+# 25000/25000 [==============================] - 5s 208us/sample - loss: 3.2410e-04 - acc: 1.0000 - val_loss: 0.7635 - val_acc: 0.8298
+# Epoch 10/10
+# 25000/25000 [==============================] - 5s 208us/sample - loss: 1.9135e-04 - acc: 1.0000 - val_loss: 0.8007 - val_acc: 0.8294
+# <tensorflow.python.keras.callbacks.History at 0x7f773c090748>
 ```
+
+## Loss Function
+
+Think about loss in this context, as a `confidence` in the prediction. So while the number of accurate predictions increased over time, what was interesting was that the confidence per prediction effectively decreased. You may find this happening a lot with text data. 
+
+Ways to handle such cases:
+- One way to do this is to explore the differences as you tweak the hyperparameters.
+    + So for example, if you consider these changes, a decrease in vocabulary size(10,000 -> 1,000), and taking shorter sentences, reducing the likelihood of padding
+    + Another tweak. Changing the number of dimensions using the embedding was also tried
+
+## Pre-tokenized Datasets & Subwords text encoder 
