@@ -111,7 +111,6 @@ Saving to: ‘/tmp/sarcasm.json’
 (26709, 40)
 ```
 
-## IMDB Datasets
 
 ## Tensorflow Datasets as tfds
 
