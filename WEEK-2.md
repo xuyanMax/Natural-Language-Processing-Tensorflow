@@ -43,16 +43,14 @@ testing_labels_final = np.array(testing_labels)
 
 ### Create sequencing sentences from tokens
 ```python
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocess ing.sequence import pad_sequences
 
 vocab_size = 10000
 embedding_dim = 16
 max_length = 120
 trunc_type='post'
 oov_tok = "<OOV>"
-
-
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocess ing.sequence import pad_sequences
 
 tokenizer = Tokenizer(num_words = vocab_size, oov_token=oov_tok)
 tokenizer.fit_on_texts(training_sentences)
@@ -82,11 +80,18 @@ print(training_sentences[1])
 
 #### Embedding 
 **Quote from Laurence Moroney**
->The full scope of how embeddings work is beyond the scope of this course. But think of it like this. You have words in a sentence and often words that have similar meanings are close to each other. So in a movie review, it might say that the movie was dull and boring, or it might say that it was fun and exciting. `So what if you could pick a vector in a higher-dimensional space say 16 dimensions`, and words that are found together are given similar vectors. Then over time, `words can begin to cluster together`. The meaning of the words can come from the labeling of the dataset. So in this case, we say a negative review and the words dull and boring show up a lot in the negative review so that they have similar sentiments, and they are close to each other in the sentence. Thus their vectors will be similar. As the neural network trains, it can then learn these vectors associating them with the labels to come up with what's called an `embedding` i.e., the vectors for each word with their associated sentiment. The results of the `embedding will be a 2D array`with the `length of the sentence` and the `embedding dimension` for example 16 as its size. So we need to `flatten it out` in much the same way as we needed to flatten out our images. We then feed that into a dense neural network to do the classification. Often in natural language processing, a different layer type than a flatten is used, and this is a `global average pooling 1D`. The reason for this is the size of the output vector being fed into the dense. So for example, if I show the summary of the model with the flatten that we just saw, it will look like this. Or alternatively, you can use a Global Average Pooling 1D like this, which averages across the vector to flatten it out. Your model summary should look like this, which is simpler and should be a little faster. Try it for yourself in colab and check the results. Over 10 epochs with global average pooling, I got an accuracy of 0.9664 on training and 0.8187 on test, taking about 6.2 seconds per epoch. With flatten, my accuracy was 1.0 and my validation about 0.83 taking about 6.5 seconds per epoch. So it was a little slower, but a bit more accurate. Try them both out, and experiment where the results for yourself.
+
+>The full scope of how embeddings work is beyond the scope of this course. But think of it like this. You have words in a sentence and often words that have similar meanings are close to each other. So in a movie review, it might say that the movie was dull and boring, or it might say that it was fun and exciting. 
+>
+> `So what if you could pick a vector in a higher-dimensional space say 16 dimensions`, and words that are found together are given similar vectors. Then over time, `words can begin to cluster together`. The meaning of the words can come from the labeling of the dataset. So in this case, we say a negative review and the words dull and boring show up a lot in the negative review so that they have similar sentiments, and they are close to each other in the sentence. Thus their vectors will be similar. As the neural network trains, it can then learn these vectors associating them with the labels to come up with what's called an `embedding` i.e., the vectors for each word with their associated sentiment. The results of the embedding will be a `2D array` with the length of the sentence and the embedding dimension for example 16 as its size. So we need to `flatten it out` in much the same way as we needed to flatten out our images. We then feed that into a dense neural network to do the classification. Often in natural language processing, a different layer type than a flatten is used, and this is a `global average pooling 1D`. The reason for this is the size of the output vector being fed into the dense. So for example, if I show the summary of the model with the flatten that we just saw, it will look like this. Or alternatively, you can use a Global Average Pooling 1D like this, which averages across the vector to flatten it out. Your model summary should look like this, which is simpler and should be a little faster. Try it for yourself in colab and check the results. Over 10 epochs with global average pooling, I got an accuracy of 0.9664 on training and 0.8187 on test, taking about 6.2 seconds per epoch. With flatten, my accuracy was 1.0 and my validation about 0.83 taking about 6.5 seconds per epoch. So it was a little slower, but a bit more accurate. Try them both out, and experiment where the results for yourself.
 
 ```python
+e = model.layers[0]
+weights = e.get_weights()[0]
+print(weights.shape) # shape: (vocab_size, embedding_dim)
+
 model = tf.keras.Sequential([
-    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
+    tf.keras.layers.Embedding(tokenizer.vocab_size, embedding_dim, input_length=max_length),
     tf.keras.layers.Flatten(), # or use tf.keras.layers.GlobalAveragePooling1D(),
     tf.keras.layers.Dense(6, activation='relu'),
     tf.keras.layers.Dense(1, activation='sigmoid')
@@ -111,6 +116,7 @@ model.summary()
 # Non-trainable params: 0
 # ___________________________
 ```
+
 ### Output Embedding Metadata
 Quote from Laurence
 
@@ -133,6 +139,7 @@ for word_num in range(1, vocab_size):
 out_v.close()
 out_m.close()
 ```
+
 ### Tensorflow Projecter 
 [Visualize Embedding](https://projector.tensorflow.org)
 
@@ -179,3 +186,101 @@ Ways to handle such cases:
     + Another tweak. Changing the number of dimensions using the embedding was also tried
 
 ## Pre-tokenized Datasets & Subwords text encoder 
+
+ > Well, the keys in the fact that we're using sub-words and not for-words, sub-word meanings are often nonsensical and it's only when we put them together in sequences that they have meaningful semantics. Thus, some way from learning from sequences would be a great way forward, and that's exactly what you're going to do next week with recurrent neural networ
+
+```python
+# NOTE: PLEASE MAKE SURE YOU ARE RUNNING THIS IN A PYTHON3 ENVIRONMENT
+
+import tensorflow as tf
+print(tf.__version__)
+
+# Uncomment and run this if you don't have TensorFlow 2.0x [Check for latest 2.0 instructions at https://www.tensorflow.org/versions/r2.0/api_docs/python/tf]
+#!pip install tensorflow==2.0.0-beta0
+
+# Double check TF 2.0x is installed. If you ran the above block, there was a 
+# 'reset all runtimes' button at the bottom that you needed to press
+import tensorflow as tf
+print(tf.__version__)
+
+# If the import fails, run this
+# !pip install -q tensorflow-datasets
+
+import tensorflow_datasets as tfds
+imdb, info = tfds.load("imdb_reviews/subwords8k", with_info=True, as_supervised=True)
+
+train_data, test_data = imdb['train'], imdb['test']
+
+tokenizer = info.features['text'].encoder
+
+print(tokenizer.subwords)
+
+sample_string = 'TensorFlow, from basics to mastery'
+
+tokenized_string = tokenizer.encode(sample_string)
+print ('Tokenized string is {}'.format(tokenized_string))
+
+original_string = tokenizer.decode(tokenized_string)
+print ('The original string: {}'.format(original_string))
+
+for ts in tokenized_string:
+  print ('{} ----> {}'.format(ts, tokenizer.decode([ts])))
+
+# One thing to take into account though, is the shape of the vectors coming from the tokenizer through the embedding, and it's not easily flattened. So we'll use Global Average Pooling 1D instead. Trying to flatten them, will cause a TensorFlow crash.
+embedding_dim = 64
+model = tf.keras.Sequential([
+    tf.keras.layers.Embedding(tokenizer.vocab_size, embedding_dim),
+    tf.keras.layers.GlobalAveragePooling1D(),
+    tf.keras.layers.Dense(6, activation='relu'),
+    tf.keras.layers.Dense(1, activation='sigmoid')
+])
+
+model.summary()
+
+num_epochs = 10
+
+model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
+
+history = model.fit(train_data, epochs=num_epochs, validation_data=test_data)
+
+import matplotlib.pyplot as plt
+
+
+def plot_graphs(history, string):
+  plt.plot(history.history[string])
+  plt.plot(history.history['val_'+string])
+  plt.xlabel("Epochs")
+  plt.ylabel(string)
+  plt.legend([string, 'val_'+string])
+  plt.show()
+  
+plot_graphs(history, "accuracy")
+plot_graphs(history, "loss")
+In [0]:
+e = model.layers[0]
+weights = e.get_weights()[0]
+print(weights.shape) # shape: (vocab_size, embedding_dim)
+
+import io
+
+out_v = io.open('vecs.tsv', 'w', encoding='utf-8')
+out_m = io.open('meta.tsv', 'w', encoding='utf-8')
+for word_num in range(1, tokenizer.vocab_size):
+  word = tokenizer.decode([word_num])
+  embeddings = weights[word_num]
+  out_m.write(word + "\n")
+  out_v.write('\t'.join([str(x) for x in embeddings]) + "\n")
+out_v.close()
+out_m.close()
+
+
+try:
+  from google.colab import files
+except ImportError:
+  pass
+else:
+  files.download('vecs.tsv')
+  files.download('meta.tsv')
+```
+
+
