@@ -7,11 +7,11 @@
 4. What Keras layer type allows LSTMs to look forward and backward in a sentece?(Bidirectional)
 5. What is the output shape of a bidirectional LSTM layer with 64 unites? ((null, 128) or (128, null))
 6. When stacking LSTM, how do you instruct an LSTM to feed the next one in the sequence? (Ensure the `return_sequences=true` only on units that set to another LSTM)
-7. What is the best way to avoid overfitting in NLP datasets?(us GRUs, LSTMs, Conv1d or none)
+7. What is the best way to avoid overfitting in NLP datasets?(us GRUs, LSTMs, Conv1d or none)???
 8. If a sentence has 120 tokens in it, and a Conv1D with 128 filters with a Kernal size of 5 is passed over it, what’s the output shape? (null, 116, 128)
 
 ## Long Short Term Memory (LSTMs) 
-So, if we're looking at a sequence of words we might lose that context(上下文语境). With that in mind an update to RNNs is called `LSTM`, long short - term memory has been created. In addition to the context being PaaSed as it is in RNNs, LSTMs have an additional pipeline of contexts called `cell state`. This can pass through the network to impact it. This helps keep context from earlier tokens relevance in later ones so issues like the one that we just discussed can be aided. Cell states can also be bidirectional. So later contexts can impact earlier ones as we'll see when we look at the code.
+So, if we're looking at a sequence of words we might lose that context(上下文语境). With that in mind an update to RNNs is called `LSTM`, long short- term memory has been created. In addition to the context being PaaSed as it is in RNNs, LSTMs have an additional pipeline of contexts called `cell state`. This can pass through the network to impact it. This helps keep context from earlier tokens relevance in later ones so issues like the one that we just discussed can be aided. Cell states can also be bidirectional. So later contexts can impact earlier ones as we'll see when we look at the code.
 
 ## Sequence Model
 
@@ -158,11 +158,11 @@ model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
 model.summary()
 
 num_epochs = 50
-history = model.fit(training_padded, training_labels, epochs=num_epochs, validation_data=(testing_padded, testing_labels), verbose=1)
+history = model.fit(training_padded, training_labels, epochs=num_epochs, validation_data=(testing_padded, tesen" ting_labels), verbose=1)
+```
 
-
+```python
 import matplotlib.pyplot as plt
-
 
 def plot_graphs(history, string):
   plt.plot(history.history[string])
@@ -180,4 +180,12 @@ plot_graphs(history, 'loss')
 ### IMDB Reviews with GRU (and optional LSTM and Conv1D)
 
 
-### EXERCISE 
+### EXERCISE: Explore Overfitting in NLP
+When looking at a number of different types of layer for text classification this week you saw many examples of overfitting -- with one of the major reasons for the overfitting being that your training dataset was quite small, and with a small number of words. Embeddings derived from this may be over generalized also. So for this week’s exercise you’re going to train on a large dataset, as well as using transfer learning of an existing set of embeddings.
+
+The dataset is from:  https://www.kaggle.com/kazanova/sentiment140. I’ve cleaned it up a little, in particular to make the file encoding work with Python CSV reader.
+
+The embeddings that you will transfer learn from are called the GloVe, also known as Global Vectors for Word Representation, available at: https://nlp.stanford.edu/projects/glove/
+
+
+
